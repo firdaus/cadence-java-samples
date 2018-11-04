@@ -13,7 +13,7 @@ public class InterpreterWorkflowImpl implements InterpreterWorkflow {
       Workflow.newUntypedActivityStub(
           new ActivityOptions.Builder().setScheduleToCloseTimeout(Duration.ofMinutes(10)).build());
 
-  private String currentActivity;
+  private String currentActivity = "init";
   private String lastActivityResult;
 
   @Override
