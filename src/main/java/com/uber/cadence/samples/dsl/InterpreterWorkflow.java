@@ -6,6 +6,7 @@ import com.uber.cadence.workflow.WorkflowMethod;
 public interface InterpreterWorkflow {
   @WorkflowMethod
   String execute(String type, String input);
+
   @QueryMethod
   String getCurrentActivity();
 }
