@@ -1,16 +1,13 @@
 package com.uber.cadence.samples.dsl;
 
-import com.google.common.base.Utf8;
-import com.uber.cadence.client.WorkflowClient;
-import com.uber.cadence.converter.JsonDataConverter;
-import com.uber.cadence.worker.Worker;
+import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
 
+import com.uber.cadence.client.WorkflowClient;
+import com.uber.cadence.worker.Worker;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
 
 public class InterpreterWorker {
   private static final String TASK_LIST = "Interpreter";
@@ -41,14 +38,16 @@ public class InterpreterWorker {
 
   private static Map<String, String> getDefinition1() {
     Map<String, String> definition1 = new HashMap<>();
-    List<String> sequence = Arrays.asList("Activities::activity1",
+    List<String> sequence =
+        Arrays.asList(
+            "Activities::activity1",
             "Activities::activity2",
             "Activities::activity3",
             "Activities::activity4");
     definition1.put("init", sequence.get(0));
 
-    for (int i= 0; i<sequence.size() - 1; i++) {
-      definition1.put(sequence.get(i), sequence.get(i+1));
+    for (int i = 0; i < sequence.size() - 1; i++) {
+      definition1.put(sequence.get(i), sequence.get(i + 1));
     }
     definition1.put(sequence.get(sequence.size() - 1), null);
     return definition1;
