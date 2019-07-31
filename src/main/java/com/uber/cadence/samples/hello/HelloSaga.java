@@ -1,18 +1,32 @@
+/*
+ *  Copyright 2012-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ *  Modifications copyright (C) 2017 Uber Technologies, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not
+ *  use this file except in compliance with the License. A copy of the License is
+ *  located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ *  or in the "license" file accompanying this file. This file is distributed on
+ *  an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ *  express or implied. See the License for the specific language governing
+ *  permissions and limitations under the License.
+ */
+
 package com.uber.cadence.samples.hello;
+
+import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
 
 import com.uber.cadence.activity.ActivityMethod;
 import com.uber.cadence.client.WorkflowClient;
 import com.uber.cadence.client.WorkflowOptions;
 import com.uber.cadence.worker.Worker;
 import com.uber.cadence.workflow.*;
-
 import java.time.Duration;
 
-import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
-
-/**
- * Demonstrates implementing saga transaction and compensation logic using Cadence.
- */
+/** Demonstrates implementing saga transaction and compensation logic using Cadence. */
 public class HelloSaga {
   static final String TASK_LIST = "HelloSaga";
 
@@ -63,11 +77,10 @@ public class HelloSaga {
 
   public interface SagaWorkflow {
     /**
-     * Main saga workflow.
-     * Here we execute activity operation twice (first from a child workflow, second directly using
-     * activity stub), add three compensation functions, and then throws some exception in workflow code.
-     * When we catch the exception, saga.compensate will run the compensation functions according
-     * to the policy specified in SagaOptions.
+     * Main saga workflow. Here we execute activity operation twice (first from a child workflow,
+     * second directly using activity stub), add three compensation functions, and then throws some
+     * exception in workflow code. When we catch the exception, saga.compensate will run the
+     * compensation functions according to the policy specified in SagaOptions.
      */
     @WorkflowMethod
     void execute();
@@ -83,7 +96,8 @@ public class HelloSaga {
         // The following demonstrate how to compensate sync invocations.
         ChildWorkflowOperation op1 = Workflow.newChildWorkflowStub(ChildWorkflowOperation.class);
         op1.execute(10);
-        ChildWorkflowCompensation c1 = Workflow.newChildWorkflowStub(ChildWorkflowCompensation.class);
+        ChildWorkflowCompensation c1 =
+            Workflow.newChildWorkflowStub(ChildWorkflowCompensation.class);
         saga.addCompensation(c1::compensate, -10);
 
         // The following demonstrate how to compensate async invocations.
@@ -94,7 +108,8 @@ public class HelloSaga {
         // The following demonstrate the ability of supplying arbitrary lambda as a saga
         // compensation function. In production code please always use Workflow.getLogger
         // to log messages in workflow code.
-        saga.addCompensation(() -> System.out.println("Other compensation logic in main workflow."));
+        saga.addCompensation(
+            () -> System.out.println("Other compensation logic in main workflow."));
         throw new RuntimeException("some error");
 
       } catch (Exception e) {
