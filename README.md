@@ -1,4 +1,3 @@
-**If you work for Uber** use the internal _cadence-java-client-samples_ repository.
 # Java Cadence Samples
 These samples demonstrate various capabilities of Java Cadence client and server. You can learn more about Cadence at:
 * [Cadence Service](https://github.com/uber/cadence)
@@ -74,29 +73,14 @@ of details about the execution history.
 
 ## Install Cadence CLI
 
-Check out [Cadence Service](https://github.com/uber/cadence) and run **make bins**.
-CLI executable named **cadence** will be in the root directory.
-
-To not pass the domain on every command set the following environment variable:
-
-    export CADENCE_CLI_DOMAIN=sample
-
-After the CADENCE_CLI_DOMAIN is set, to list closed workflow executions run:
-
-    cadence workflow list
-
-To see a history of a particular workflow execution run:
-
-    cadence workflow showid <WorkflowID>
-
-To see a stack trace of a currently running workflow execution run:
-
-    ./cadence workflow stack -w <WorkflowID>
+[Command Line Interface Documentation](https://mfateev.github.io/cadence/docs/08_cli)
 
 ## Run the samples
 
 Each sample has specific requirements for running it. The following sections contain information about
 how to run each of the samples after you've built them using the preceding instructions.
+
+Don't forget to check unit tests found under src/test/java!
 
 ### Hello World
 
@@ -124,4 +108,15 @@ execute together, we recommend that you run more than one instance of this worke
 The second command starts workflows. Each invocation starts a new workflow execution.
 
     ./gradlew -q execute -PmainClass=com.uber.cadence.samples.fileprocessing.FileProcessingStarter
+    
+### Trip Booking
+
+Cadence implementation of the [Camunda BPMN trip booking example](https://github.com/berndruecker/trip-booking-saga-java)
+
+Demonstrates Cadence approach to SAGA.
+
+To run:
+
+    ./gradlew -q execute -PmainClass=com.uber.cadence.samples.bookingsaga.TripBookingSaga
+
 
