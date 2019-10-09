@@ -1,7 +1,6 @@
 package com.uber.cadence.samples.driverrewards;
 
 import com.uber.cadence.workflow.Workflow;
-
 import java.time.Duration;
 
 public class DriverRewardsWorkflowImpl implements DriverRewardsWorkflow {

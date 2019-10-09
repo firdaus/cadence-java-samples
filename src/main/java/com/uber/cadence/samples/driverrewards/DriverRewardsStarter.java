@@ -17,13 +17,10 @@
 
 package com.uber.cadence.samples.driverrewards;
 
+import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
+
 import com.uber.cadence.client.WorkflowClient;
 import com.uber.cadence.client.WorkflowOptions;
-import com.uber.cadence.samples.fileprocessing.FileProcessingWorkflow;
-
-import java.net.URL;
-
-import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
 
 /** Starts a driver rewards sample workflow. */
 public class DriverRewardsStarter {
@@ -34,13 +31,10 @@ public class DriverRewardsStarter {
     String driverId = "Driver3";
     WorkflowOptions options = new WorkflowOptions.Builder().setWorkflowId(driverId).build();
     DriverRewardsWorkflow workflow =
-            workflowClient.newWorkflowStub(DriverRewardsWorkflow.class, options);
+        workflowClient.newWorkflowStub(DriverRewardsWorkflow.class, options);
 
     System.out.println("Starting Driver Rewards for " + driverId);
-    WorkflowClient.start(
-            workflow::driverRewards,
-            driverId
-    );
+    WorkflowClient.start(workflow::driverRewards, driverId);
 
     System.out.println("DriverRewards started for " + driverId);
     System.exit(0);

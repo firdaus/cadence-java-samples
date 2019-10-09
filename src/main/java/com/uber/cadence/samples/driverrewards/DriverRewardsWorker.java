@@ -17,10 +17,10 @@
 
 package com.uber.cadence.samples.driverrewards;
 
+import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
+
 import com.uber.cadence.worker.Worker;
 import com.uber.cadence.worker.Worker.Factory;
-
-import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
 
 /**
  * This is the process that hosts all workflows and activities in this sample. Run multiple
