@@ -23,13 +23,26 @@ import com.uber.cadence.workflow.QueryMethod;
 import com.uber.cadence.workflow.SignalMethod;
 import com.uber.cadence.workflow.WorkflowMethod;
 
+/** Driver rewards workflow interface. */
 public interface DriverRewardsWorkflow {
+
+  /**
+   * Main workflow method called when workflow is started.
+   *
+   * @param driverId unique driver id.
+   */
   @WorkflowMethod(executionStartToCloseTimeoutSeconds = 3600 * 24 * 365, taskList = TASK_LIST)
   void driverRewards(String driverId);
 
+  /**
+   * Called upon each trip completion.
+   *
+   * @param rating trip driver rating from 1 to 5.
+   */
   @SignalMethod
   void onTrip(int rating);
 
+  /** Returns average driver rating for the current time period. */
   @QueryMethod
   float getRating();
 }

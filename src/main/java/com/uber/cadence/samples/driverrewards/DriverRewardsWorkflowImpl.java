@@ -20,16 +20,28 @@ package com.uber.cadence.samples.driverrewards;
 import com.uber.cadence.workflow.Workflow;
 import java.time.Duration;
 
-public class DriverRewardsWorkflowImpl implements DriverRewardsWorkflow {
+/**
+ * Implements driver rewards business logic as a workflow. Compare to a non fault tolerant
+ * implementation.
+ *
+ * @see DriverRewards
+ */
+public final class DriverRewardsWorkflowImpl implements DriverRewardsWorkflow {
 
-  private final DriverRewardsActivities driverRewards;
+  /** Stub used to invoke activities through a strongly typed interface. */
+  private final DriverRewardsActivities driverRewards =
+      Workflow.newActivityStub(DriverRewardsActivities.class);
+  /**
+   * Time workflow started execution. Note that Workflow.currentTimeMillis must be used instead of
+   * System.currentTimeMillis in the workflow code.
+   */
   private final long signUpTime = Workflow.currentTimeMillis();
+  /** Total trip count for the current month. */
   private int tripCount;
+  /**
+   * Total sum of ratings for the current month. Used to calculate the average rating for the month.
+   */
   private int ratingSum;
-
-  public DriverRewardsWorkflowImpl() {
-    driverRewards = Workflow.newActivityStub(DriverRewardsActivities.class);
-  }
 
   @Override
   public void onTrip(int rating) {
@@ -46,6 +58,9 @@ public class DriverRewardsWorkflowImpl implements DriverRewardsWorkflow {
   public void driverRewards(String driverId) {
     while (!expired()) {
       reset();
+      // Workflow.sleep must be used instead of Thread.sleep in the workflow code.
+      // It is OK to sleep for long period of time in production code.
+      // The workflow does not consume any worker resources while sleeping.
       Workflow.sleep(Duration.ofDays(30));
       if (checkEligibility()) {
         driverRewards.activate(driverId);
