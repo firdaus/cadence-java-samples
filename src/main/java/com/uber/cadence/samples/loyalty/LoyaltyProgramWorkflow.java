@@ -21,28 +21,30 @@ import com.uber.cadence.workflow.QueryMethod;
 import com.uber.cadence.workflow.SignalMethod;
 import com.uber.cadence.workflow.WorkflowMethod;
 
-import static com.uber.cadence.samples.loyalty.LoyaltyProgramWorker.TASK_LIST;
-
-/** Driver rewards workflow interface. */
+/** Loyalty program workflow interface. */
 public interface LoyaltyProgramWorkflow {
 
   /**
    * Main workflow method called when workflow is started.
    *
-   * @param driverId unique driver id.
+   * @param customerId unique customer id.
    */
-  @WorkflowMethod(executionStartToCloseTimeoutSeconds = 3600 * 24 * 365, taskList = TASK_LIST)
-  void driverRewards(String driverId);
+  @WorkflowMethod
+  void loyaltyProgram(String customerId);
 
   /**
-   * Called upon each trip completion.
+   * Called upon each customer order.
    *
-   * @param rating trip driver rating from 1 to 5.
+   * @param orderId of the placed order
    */
   @SignalMethod
-  void onTrip(int rating);
+  void onOrder(String orderId);
 
-  /** Returns average driver rating for the current time period. */
+  /** Returns number orders placed this month. */
   @QueryMethod
-  float getRating();
+  int getThisMonthOrderCount();
+
+  /** Returns total number orders placed by the customer. */
+  @QueryMethod
+  int getTotalOrderCount();
 }

@@ -17,12 +17,16 @@
 
 package com.uber.cadence.samples.loyalty;
 
+import com.uber.cadence.activity.ActivityOptions;
 import com.uber.cadence.workflow.Workflow;
-
 import java.time.Duration;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Implements driver rewards business logic as a workflow. Compare to a non fault tolerant
+ * Implements loyalty program business logic as a workflow. Compare to a non fault tolerant
  * implementation.
  *
  * @see LoyaltyProgram
@@ -30,58 +34,70 @@ import java.time.Duration;
 public final class LoyaltyProgramWorkflowImpl implements LoyaltyProgramWorkflow {
 
   /** Stub used to invoke activities through a strongly typed interface. */
-  private final LoyaltyProgramActivities driverRewards =
-      Workflow.newActivityStub(LoyaltyProgramActivities.class);
-  /**
-   * Time workflow started execution. Note that Workflow.currentTimeMillis must be used instead of
-   * System.currentTimeMillis in the workflow code.
-   */
-  private final long signUpTime = Workflow.currentTimeMillis();
-  /** Total trip count for the current month. */
-  private int tripCount;
-  /**
-   * Total sum of ratings for the current month. Used to calculate the average rating for the month.
-   */
-  private int ratingSum;
+  private static final int ORDER_ID_MAX_SIZE = 1000;
 
+  private final Set<String> orderIds = newLRUSet();
+
+  private final ActivityOptions activityOptions =
+      new ActivityOptions.Builder().setScheduleToCloseTimeout(Duration.ofHours(1)).build();
+
+  private final LoyaltyProgramActions loyaltyProgram =
+      Workflow.newActivityStub(LoyaltyProgramActions.class, activityOptions);
+
+  private String customerId;
+  private int ordersThisMonth;
+  private int totalOrders;
+  private int currentTier;
+
+  /** New order notification */
   @Override
-  public void onTrip(int rating) {
-    tripCount++;
-    ratingSum += rating;
+  public void onOrder(String orderId) {
+    if (!orderIds.add(orderId)) {
+      return;
+    }
+    ordersThisMonth++;
+    totalOrders++;
+    int tier = totalOrders / 10;
+    if (tier > currentTier) {
+      currentTier = tier;
+      loyaltyProgram.sendMessage(customerId, "Upgraded to the next tier: " + currentTier);
+      loyaltyProgram.updateTier(customerId, currentTier);
+    }
   }
 
   @Override
-  public float getRating() {
-    return tripCount == 0 ? -1 : ((float) ratingSum) / tripCount;
+  public int getThisMonthOrderCount() {
+    return ordersThisMonth;
   }
 
   @Override
-  public void driverRewards(String driverId) {
-    while (!expired()) {
-      reset();
-      // Workflow.sleep must be used instead of Thread.sleep in the workflow code.
-      // It is OK to sleep for long period of time in production code.
-      // The workflow does not consume any worker resources while sleeping.
-      Workflow.sleep(Duration.ofDays(30));
-      if (checkEligibility()) {
-        driverRewards.activate(driverId);
+  public int getTotalOrderCount() {
+    return totalOrders;
+  }
+
+  /** Called when customer signs up for the rewards program. */
+  @Override
+  public void loyaltyProgram(String customerId) {
+    this.customerId = customerId;
+    while (true) {
+      ordersThisMonth = 0;
+      Workflow.sleep(Duration.ofDays(30).toMillis());
+      if (ordersThisMonth > 0) {
+        loyaltyProgram.credit(customerId, 500);
+        loyaltyProgram.sendMessage(customerId, "Credited $5");
       } else {
-        driverRewards.deactivate(driverId);
-        break;
+        loyaltyProgram.sendMessage(customerId, "No credit this month! Buy something!");
       }
     }
   }
 
-  private boolean expired() {
-    return Workflow.currentTimeMillis() > signUpTime + Duration.ofDays(365).toMillis();
-  }
-
-  private boolean checkEligibility() {
-    return getRating() > 4.0 && tripCount > 20;
-  }
-
-  private void reset() {
-    tripCount = 0;
-    ratingSum = 0;
+  private Set<String> newLRUSet() {
+    return Collections.newSetFromMap(
+        new LinkedHashMap<String, Boolean>() {
+          @Override
+          protected boolean removeEldestEntry(Map.Entry<String, Boolean> eldest) {
+            return size() > ORDER_ID_MAX_SIZE;
+          }
+        });
   }
 }

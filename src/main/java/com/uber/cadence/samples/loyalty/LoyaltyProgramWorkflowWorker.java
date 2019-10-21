@@ -27,7 +27,7 @@ import com.uber.cadence.worker.Worker.Factory;
  * instances of the worker in different windows. Then start a workflow by running the
  * LoyaltyProgramStarter.
  */
-public class LoyaltyProgramWorker {
+public class LoyaltyProgramWorkflowWorker {
 
   static final String TASK_LIST = "LoyaltyProgram";
 
@@ -35,8 +35,7 @@ public class LoyaltyProgramWorker {
     Factory factory = new Factory(DOMAIN);
     Worker worker = factory.newWorker(TASK_LIST);
     worker.registerWorkflowImplementationTypes(LoyaltyProgramWorkflowImpl.class);
-    worker.registerActivitiesImplementations(new LoyaltyProgramActionsImpl());
     factory.start();
-    System.out.println("Worker started for task list: " + TASK_LIST);
+    System.out.println("WorkflowWorker started for task list: " + TASK_LIST);
   }
 }

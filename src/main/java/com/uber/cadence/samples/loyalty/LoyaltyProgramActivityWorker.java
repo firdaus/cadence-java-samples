@@ -17,15 +17,14 @@
 
 package com.uber.cadence.samples.loyalty;
 
+import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
+
 import com.uber.cadence.worker.Worker;
 import com.uber.cadence.worker.Worker.Factory;
 
-import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
-
 /**
- * This is the process that hosts all workflows and activities in this sample. Run multiple
- * instances of the worker in different windows. Then start a workflow by running the
- * LoyaltyProgramStarter.
+ * This is the process that hosts all activities in this sample. Run multiple instances of the
+ * worker in different windows. Then start a workflow by running the LoyaltyProgramStarter.
  */
 public class LoyaltyProgramActivityWorker {
 
@@ -34,9 +33,8 @@ public class LoyaltyProgramActivityWorker {
   public static void main(String[] args) {
     Factory factory = new Factory(DOMAIN);
     Worker worker = factory.newWorker(TASK_LIST);
-    worker.registerWorkflowImplementationTypes(LoyaltyProgramWorkflowImpl.class);
     worker.registerActivitiesImplementations(new LoyaltyProgramActionsImpl());
     factory.start();
-    System.out.println("Worker started for task list: " + TASK_LIST);
+    System.out.println("ActiivtyWorker started for task list: " + TASK_LIST);
   }
 }

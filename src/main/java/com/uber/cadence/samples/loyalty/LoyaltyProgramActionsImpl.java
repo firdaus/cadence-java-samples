@@ -17,10 +17,10 @@
 
 package com.uber.cadence.samples.loyalty;
 
-public class LoyaltyProgramActionImpl implements LoyaltyProgramAction {
+public final class LoyaltyProgramActionsImpl implements LoyaltyProgramActions {
 
   @Override
-  public void notify(String customerId, String message) {
+  public void sendMessage(String customerId, String message) {
     System.out.println("Message to customer " + customerId + ": " + message);
   }
 

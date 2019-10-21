@@ -17,10 +17,13 @@
 
 package com.uber.cadence.samples.loyalty;
 
+import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
+import static com.uber.cadence.samples.loyalty.LoyaltyProgramWorkflowWorker.TASK_LIST;
+
+import com.uber.cadence.WorkflowIdReusePolicy;
 import com.uber.cadence.client.WorkflowClient;
 import com.uber.cadence.client.WorkflowOptions;
-
-import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
+import java.time.Duration;
 
 /** Starts a loyalty program workflow. */
 public class LoyaltyProgramStarter {
@@ -28,15 +31,21 @@ public class LoyaltyProgramStarter {
   public static void main(String[] args) throws Exception {
     WorkflowClient workflowClient = WorkflowClient.newInstance(DOMAIN);
 
-    String driverId = "Driver3";
-    WorkflowOptions options = new WorkflowOptions.Builder().setWorkflowId(driverId).build();
+    String customerId = "Customer3";
+    WorkflowOptions options =
+        new WorkflowOptions.Builder()
+            .setWorkflowId(customerId)
+            .setTaskList(TASK_LIST)
+            .setExecutionStartToCloseTimeout(Duration.ofDays(365 * 2))
+            .setWorkflowIdReusePolicy(WorkflowIdReusePolicy.AllowDuplicate)
+            .build();
     LoyaltyProgramWorkflow workflow =
         workflowClient.newWorkflowStub(LoyaltyProgramWorkflow.class, options);
 
-    System.out.println("Starting Driver Rewards for " + driverId);
-    WorkflowClient.start(workflow::driverRewards, driverId);
+    System.out.println("Starting Loyalty program for " + customerId);
+    WorkflowClient.start(workflow::loyaltyProgram, customerId);
 
-    System.out.println("DriverRewards started for " + driverId);
+    System.out.println("LoyaltyProgram started for " + customerId);
     System.exit(0);
   }
 }

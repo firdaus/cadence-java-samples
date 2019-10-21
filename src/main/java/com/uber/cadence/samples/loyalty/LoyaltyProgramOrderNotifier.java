@@ -18,32 +18,26 @@
 package com.uber.cadence.samples.loyalty;
 
 import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
-import static com.uber.cadence.samples.loyalty.LoyaltyProgramWorkflowWorker.TASK_LIST;
 
 import com.uber.cadence.client.WorkflowClient;
-import com.uber.cadence.client.WorkflowOptions;
-import java.time.Duration;
+import java.util.Random;
 
-/** Starts a loyalty program workflow. */
-public class LoyaltyProgramStarter {
+/** Notifies loyalty program workflow about next 10 orders */
+public class LoyaltyProgramOrderNotifier {
 
   public static void main(String[] args) throws Exception {
     WorkflowClient workflowClient = WorkflowClient.newInstance(DOMAIN);
 
     String customerId = "Customer3";
-    WorkflowOptions options =
-        new WorkflowOptions.Builder()
-            .setWorkflowId(customerId)
-            .setTaskList(TASK_LIST)
-            .setExecutionStartToCloseTimeout(Duration.ofDays(365 * 2))
-            .build();
     LoyaltyProgramWorkflow workflow =
-        workflowClient.newWorkflowStub(LoyaltyProgramWorkflow.class, options);
+        workflowClient.newWorkflowStub(LoyaltyProgramWorkflow.class, customerId);
 
-    System.out.println("Starting Loyalty program for " + customerId);
-    WorkflowClient.start(workflow::loyaltyProgram, customerId);
-
-    System.out.println("LoyaltyProgram started for " + customerId);
+    Random random = new Random();
+    for (int i = 0; i < 10; i++) {
+      String orderId = "order-" + random.nextInt(100);
+      System.out.println("Order " + orderId + " placed by " + customerId);
+      workflow.onOrder(orderId);
+    }
     System.exit(0);
   }
 }
