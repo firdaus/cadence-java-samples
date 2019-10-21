@@ -25,17 +25,17 @@ import static com.uber.cadence.samples.common.SampleConstants.DOMAIN;
 /**
  * This is the process that hosts all workflows and activities in this sample. Run multiple
  * instances of the worker in different windows. Then start a workflow by running the
- * DriverRewardsStarter.
+ * LoyaltyProgramStarter.
  */
-public class LoyaltyProgramWorker {
+public class LoyaltyProgramActivityWorker {
 
-  static final String TASK_LIST = "DriverRewards";
+  static final String TASK_LIST = "LoyaltyProgram";
 
   public static void main(String[] args) {
     Factory factory = new Factory(DOMAIN);
     Worker worker = factory.newWorker(TASK_LIST);
     worker.registerWorkflowImplementationTypes(LoyaltyProgramWorkflowImpl.class);
-    worker.registerActivitiesImplementations(new LoyaltyProgramActivitiesImpl());
+    worker.registerActivitiesImplementations(new LoyaltyProgramActionsImpl());
     factory.start();
     System.out.println("Worker started for task list: " + TASK_LIST);
   }

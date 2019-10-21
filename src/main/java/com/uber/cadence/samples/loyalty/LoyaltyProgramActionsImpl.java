@@ -17,12 +17,20 @@
 
 package com.uber.cadence.samples.loyalty;
 
-import com.uber.cadence.activity.ActivityMethod;
+public class LoyaltyProgramActionImpl implements LoyaltyProgramAction {
 
-public interface LoyaltyProgramActivities {
-  @ActivityMethod(scheduleToCloseTimeoutSeconds = 10)
-  void activate(String driverId);
+  @Override
+  public void notify(String customerId, String message) {
+    System.out.println("Message to customer " + customerId + ": " + message);
+  }
 
-  @ActivityMethod(scheduleToCloseTimeoutSeconds = 10)
-  void deactivate(String driverId);
+  @Override
+  public void updateTier(String customerId, int tier) {
+    System.out.println("Customer " + customerId + " updated to " + tier + " tier");
+  }
+
+  @Override
+  public void credit(String customerId, int cents) {
+    System.out.println("Customer " + customerId + " account credited " + cents + " cents");
+  }
 }
