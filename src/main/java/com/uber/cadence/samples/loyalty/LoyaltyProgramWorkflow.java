@@ -20,6 +20,7 @@ package com.uber.cadence.samples.loyalty;
 import com.uber.cadence.workflow.QueryMethod;
 import com.uber.cadence.workflow.SignalMethod;
 import com.uber.cadence.workflow.WorkflowMethod;
+import java.util.List;
 
 /** Loyalty program workflow interface. */
 public interface LoyaltyProgramWorkflow {
@@ -30,7 +31,7 @@ public interface LoyaltyProgramWorkflow {
    * @param customerId unique customer id.
    */
   @WorkflowMethod
-  void loyaltyProgram(String customerId);
+  void loyaltyProgram(String customerId, List<String> orderIds);
 
   /**
    * Called upon each customer order.

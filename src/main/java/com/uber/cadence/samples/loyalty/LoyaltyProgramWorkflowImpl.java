@@ -17,13 +17,11 @@
 
 package com.uber.cadence.samples.loyalty;
 
+import com.google.common.collect.Lists;
 import com.uber.cadence.activity.ActivityOptions;
 import com.uber.cadence.workflow.Workflow;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implements loyalty program business logic as a workflow. Compare to a non fault tolerant
@@ -43,6 +41,8 @@ public final class LoyaltyProgramWorkflowImpl implements LoyaltyProgramWorkflow 
 
   private final LoyaltyProgramActions loyaltyProgram =
       Workflow.newActivityStub(LoyaltyProgramActions.class, activityOptions);
+
+  LoyaltyProgramWorkflow next = Workflow.newContinueAsNewStub(LoyaltyProgramWorkflow.class);
 
   private String customerId;
   private int ordersThisMonth;
@@ -77,9 +77,10 @@ public final class LoyaltyProgramWorkflowImpl implements LoyaltyProgramWorkflow 
 
   /** Called when customer signs up for the rewards program. */
   @Override
-  public void loyaltyProgram(String customerId) {
+  public void loyaltyProgram(String customerId, List<String> orderIds) {
     this.customerId = customerId;
-    while (true) {
+    this.orderIds.addAll(orderIds);
+    while (totalOrders == 0 || totalOrders % 2 != 0) {
       ordersThisMonth = 0;
       Workflow.sleep(Duration.ofDays(30).toMillis());
       if (ordersThisMonth > 0) {
@@ -89,6 +90,9 @@ public final class LoyaltyProgramWorkflowImpl implements LoyaltyProgramWorkflow 
         loyaltyProgram.sendMessage(customerId, "No credit this month! Buy something!");
       }
     }
+    // Continue as new to reset history size to 0
+    next.loyaltyProgram(customerId, Lists.newArrayList(this.orderIds));
+    throw new Error("Unreachable");
   }
 
   private Set<String> newLRUSet() {

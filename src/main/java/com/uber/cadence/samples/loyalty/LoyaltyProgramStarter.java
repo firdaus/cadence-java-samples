@@ -24,6 +24,7 @@ import com.uber.cadence.WorkflowIdReusePolicy;
 import com.uber.cadence.client.WorkflowClient;
 import com.uber.cadence.client.WorkflowOptions;
 import java.time.Duration;
+import java.util.Collections;
 
 /** Starts a loyalty program workflow. */
 public class LoyaltyProgramStarter {
@@ -43,7 +44,7 @@ public class LoyaltyProgramStarter {
         workflowClient.newWorkflowStub(LoyaltyProgramWorkflow.class, options);
 
     System.out.println("Starting Loyalty program for " + customerId);
-    WorkflowClient.start(workflow::loyaltyProgram, customerId);
+    WorkflowClient.start(workflow::loyaltyProgram, customerId, Collections.emptyList());
 
     System.out.println("LoyaltyProgram started for " + customerId);
     System.exit(0);

@@ -26,6 +26,7 @@ import com.uber.cadence.client.WorkflowOptions;
 import com.uber.cadence.testing.TestWorkflowEnvironment;
 import com.uber.cadence.worker.Worker;
 import java.time.Duration;
+import java.util.Collections;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class LoyaltyProgramWorkflowTest {
     LoyaltyProgramWorkflow workflow =
         workflowClient.newWorkflowStub(LoyaltyProgramWorkflow.class, options);
 
-    WorkflowClient.start(workflow::loyaltyProgram, customerId);
+    WorkflowClient.start(workflow::loyaltyProgram, customerId, Collections.emptyList());
     testEnv.sleep(Duration.ofDays(61));
     // As no trips were reported deactivates
     verify(activities, times(2)).sendMessage(customerId, "No credit this month! Buy something!");
@@ -87,7 +88,7 @@ public class LoyaltyProgramWorkflowTest {
     LoyaltyProgramWorkflow workflow =
         workflowClient.newWorkflowStub(LoyaltyProgramWorkflow.class, options);
 
-    WorkflowClient.start(workflow::loyaltyProgram, customerId);
+    WorkflowClient.start(workflow::loyaltyProgram, customerId, Collections.emptyList());
     testEnv.sleep(Duration.ofHours(1));
     for (int i = 0; i < 30; i++) {
       testEnv.sleep(Duration.ofMinutes(30));
