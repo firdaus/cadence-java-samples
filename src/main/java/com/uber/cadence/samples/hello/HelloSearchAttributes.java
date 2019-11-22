@@ -56,15 +56,15 @@ public class HelloSearchAttributes {
   }
 
   /** GreetingWorkflow implementation that calls GreetingsActivities#composeGreeting. */
-  public static class GreetingWorkflowImpl implements HelloActivity.GreetingWorkflow {
+  public static class GreetingWorkflowImpl implements HelloPolymorthicActivity.GreetingWorkflow {
 
     /**
      * Activity stub implements activity interface and proxies calls to it to Cadence activity
      * invocations. Because activities are reentrant, only a single stub can be used for multiple
      * activity invocations.
      */
-    private final HelloActivity.GreetingActivities activities =
-        Workflow.newActivityStub(HelloActivity.GreetingActivities.class);
+    private final GreetingActivities activities =
+        Workflow.newActivityStub(GreetingActivities.class);
 
     @Override
     public String getGreeting(String name) {
@@ -118,7 +118,7 @@ public class HelloSearchAttributes {
     }
   }
 
-  static class GreetingActivitiesImpl implements HelloActivity.GreetingActivities {
+  static class GreetingActivitiesImpl implements GreetingActivities {
     @Override
     public String composeGreeting(String greeting, String name) {
       return greeting + " " + name + "!";

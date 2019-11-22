@@ -86,7 +86,7 @@ Don't forget to check unit tests found under src/test/java!
 
 To run the hello world samples:
 
-    ./gradlew -q execute -PmainClass=com.uber.cadence.samples.hello.HelloActivity
+    ./gradlew -q execute -PmainClass=com.uber.cadence.samples.hello.HelloPolymorthicActivity
     ./gradlew -q execute -PmainClass=com.uber.cadence.samples.hello.HelloActivityRetry
     ./gradlew -q execute -PmainClass=com.uber.cadence.samples.hello.HelloAsync
     ./gradlew -q execute -PmainClass=com.uber.cadence.samples.hello.HelloAsyncActivityCompletion
